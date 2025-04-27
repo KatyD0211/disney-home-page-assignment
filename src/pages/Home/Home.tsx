@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Home.css';
-export const Home = () => {
+import { Collection, CollectionsResponse, getAllCollections } from '../../api/Collections';
 
+
+export const Home = () => {
+    // const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
+    const [intialLoadedCollections, setIntialLoadedCollections] = useState<Collection[]>([]);
+    const [refIdLoadedCollections, setRefIdLoadedCollections] = useState<Collection[]>([]);
+    useEffect(() => {
+       const fetchData = async () => {
+       const data = await getAllCollections();
+            setIntialLoadedCollections(data.initalCollections);
+            setRefIdLoadedCollections(data.refIdCollections);
+            console.log(data.initalCollections);
+            console.log(data.refIdCollections);
+        }
+        fetchData();
+    }, []);
     return (
         <div className="home">
             <nav className="navbar">
@@ -12,8 +27,7 @@ export const Home = () => {
                     />
                 </div>
             </nav>
-           
+
         </div>
     )
-
 }
