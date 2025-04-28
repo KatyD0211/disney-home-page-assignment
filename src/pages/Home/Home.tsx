@@ -11,11 +11,8 @@ export const Home = () => {
     
     // Create ref to access DOM element
     const selectedCollectionRef = useRef<HTMLDivElement>(null);
-    // Access the current DOM element using .current
-    // selectedCollectionRef.current?.scrollIntoView()
-    
+
     const [loadMoreCollection, setLoadMoreCollection] = useState(false);
-    const [finishedLoading, setFinishedLoading] = useState(false);
     const [refIdCollectionsIndex, setRefIdCollectionsIndex] = useState(0);
     
     const [isMagicActive, setIsMagicActive] = useState(false);
@@ -25,12 +22,11 @@ export const Home = () => {
         const fetchData = async () => {
             const data = await getAllCollections();
             setCollections(data);
-            setFinishedLoading(true);
         }
         fetchData();
     }, []);
     
-    // Load the first refId collection
+    // Load the refId collection based on the refIdCollectionsIndex and loadMoreCollection
     useEffect(() => {
         if(loadMoreCollection && refIdCollectionsIndex < collections.refIdCollections.length) {
             const fetchRefIdCollections = async () => {
@@ -135,10 +131,11 @@ export const Home = () => {
                 <div className={`nav-logo ${isMagicActive ? 'active' : ''}`}>
                     <img 
                         src="https://static-assets.bamgrid.com/product/disneyplus/images/logo.1a56f51c764022ee769c91d894d44326.svg"
-                        alt="Disney+"
+                        alt="Disney+ Logo"
                     />
                 </div>
             </nav>
+            {/* some hardcoded magic; when enter is pressed, the magic container is shown. This can fetch dynamically from the api */}
             {isMagicActive && (
                 <div className="magic-container">
                     <video width="100%" autoPlay muted loop>
@@ -147,6 +144,7 @@ export const Home = () => {
                 </div>
             )}
             <div className={`collections-container ${isMagicActive ? 'active' : ''}`}>
+                {/* Render the initial collections */}
                 {collections.initalCollections.map((collection, index) => (
                     <div 
                         key={collection.setId}
@@ -159,6 +157,7 @@ export const Home = () => {
                         />
                     </div>
                 ))}
+                {/* Render the refId collections */}
                 {loadedRefIdCollections.map((collection, index) => (
                     <div 
                         key={collection.refId}
