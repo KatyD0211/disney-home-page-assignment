@@ -18,7 +18,7 @@ export const Home = () => {
     const [finishedLoading, setFinishedLoading] = useState(false);
     const [refIdCollectionsIndex, setRefIdCollectionsIndex] = useState(0);
     
-
+    const [isMagicActive, setIsMagicActive] = useState(false);
 
     // Load the initial collections
     useEffect(() => {
@@ -110,6 +110,7 @@ export const Home = () => {
                 break;
             case 'Enter':
                 console.log('Enter');
+                setIsMagicActive(true);
                 break;
             default:
                 break;
@@ -131,14 +132,21 @@ export const Home = () => {
     return (
         <div className="home">
             <nav className="navbar">
-                <div className="nav-logo">
+                <div className={`nav-logo ${isMagicActive ? 'active' : ''}`}>
                     <img 
                         src="https://static-assets.bamgrid.com/product/disneyplus/images/logo.1a56f51c764022ee769c91d894d44326.svg"
                         alt="Disney+"
                     />
                 </div>
             </nav>
-            <div className="collections-container">
+            {isMagicActive && (
+                <div className="magic-container">
+                    <video width="100%" autoPlay muted loop>
+                        <source src="https://vod-bgc-na-east-1.media.dssott.com/bgui/ps01/disney/bgui/2020/09/15/1600129307-182860.mp4" type="video/mp4" />
+                    </video>
+                </div>
+            )}
+            <div className={`collections-container ${isMagicActive ? 'active' : ''}`}>
                 {collections.initalCollections.map((collection, index) => (
                     <div 
                         key={collection.setId}
