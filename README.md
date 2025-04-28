@@ -3,7 +3,7 @@
 This project is a Disney+ Home Page Clone built using React.
 It fetches dynamic collections of movies and shows from a public Disney content API and displays them in a modern, scrollable layout.
 
-## Tech Stack
+### Tech Stack
 
 React (Hooks, Functional Components)
 
@@ -13,23 +13,6 @@ Fetch API (async data fetching)
 
 CSS (flexbox, grid)
 
-### Features
-
-Fetches collections dynamically from Disney's static JSON API.
-
-Divides collections into two types:
-
-Initial collections (with ready items)
-
-RefId collections (need to fetch separately)
-
-Lazy loads collections as the user scrolls 80% down the page.
-
-Graceful handling of broken images (fallback image when 404).
-
-Error handling for network failures.
-
-Clean, modular, readable code structure.
 
 ### How to Run Locally
 #### 1. Clone the repo
@@ -44,29 +27,39 @@ npm install
 #### 4. Start the development server
 npm start
 
+### My Approach
+My approach focuses on modular and scalable code that enhances both performance and maintainability. Key principles include:
 
-### `npm run build`
+Dynamic Collection Fetching: Collections are fetched on-demand to avoid unnecessary data load and optimize performance.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Type Safety: TypeScript interfaces provide structure and ensure long-term maintainability.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Image Fallback: Broken images are replaced with placeholders to improve user experience.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Data Sanitization: API data is normalized to ensure consistency.
 
-### `npm run eject`
+Performance Optimization: Lazy loading and dynamic fetching minimize initial load times.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This approach ensures a seamless balance between performance, user experience, and maintainability.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Future Improvements
+Implement Infinite Scroll Optimization
+Show a spinner or skeleton loader while fetching more data, enhancing the user experience during long wait times.
+Ensure images have appropriate alt text and all interactive elements are keyboard-navigable.
+Better State Management
+lightweight caching or localStorage to persist fetched data across sessions (e.g., after refresh).
+Prefetch data for related collections ahead of time to create a smoother navigation experience.
+Automatically retry failed network requests
+Abstract getAllCollections and getCollectionItems into custom React hooks like useCollections for cleaner and reusable fetching logic.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+
+
+
+
+
