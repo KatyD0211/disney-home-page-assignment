@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CollectionItem } from '../../api/CollectionsApi';
 import './tile.css';
 
-export const Tile = (item: CollectionItem) => {
+export const Tile = (item: CollectionItem & { isSelectedTile?: boolean, isSelectedCollection?: boolean }) => {
     const [isImageValid, setIsImageValid] = useState(true);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [showContent, setShowContent] = useState(false);
@@ -16,7 +16,7 @@ export const Tile = (item: CollectionItem) => {
     }, []);
 
     return (
-        <div className="tile">
+        <div className="tile" style={{border: item.isSelectedTile && item.isSelectedCollection ? '2px solid #fff' : 'none'}}>
             <div className={`tile-image-container ${!item.imageUrl ? 'no-image' : ''} ${showContent ? 'visible' : ''}`}>
                 {isImageValid ? (
                     <img 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
 import { Collection, CollectionsResponse, getAllCollections, getCollectionItems, sanitizeCollectionItem } from '../../api/CollectionsApi';
 import { Collections } from '../../components/collections/collections'; 
@@ -34,6 +34,47 @@ export const Home = () => {
             fetchRefIdCollections();
         }
     }, [collections.refIdCollections]);
+    // Handle keyboard navigation
+    const [selectedCollectionIndex, setSelectedCollectionIndex] = useState(0);
+    const [selectedTileIndex, setSelectedTileIndex] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    
+    const handleKeyBoardNavigation = (event: KeyboardEvent) => {
+        console.log(event.key);
+        switch (event.key) {
+            case 'ArrowRight':
+                setSelectedTileIndex(selectedTileIndex + 1);
+                break;
+            case 'ArrowLeft':
+                setSelectedTileIndex(selectedTileIndex - 1);
+                break;
+            case 'ArrowUp':
+                setSelectedCollectionIndex(selectedCollectionIndex - 1);
+                break;
+            case 'ArrowDown':
+                setSelectedCollectionIndex(selectedCollectionIndex + 1);
+                break;
+            case 'Enter':
+                console.log('Enter');
+                break;
+            default:
+                break;
+        }
+    }
+    useEffect(()=>{
+        const handleKeyDown = (e: KeyboardEvent) => {
+            handleKeyBoardNavigation(e);
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        console.log(selectedTileIndex);
+        console.log(selectedCollectionIndex);
+        console.log(containerRef);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, [handleKeyBoardNavigation]);
+
 
     return (
         <div className="home">
@@ -46,11 +87,16 @@ export const Home = () => {
                 </div>
             </nav>
             <div className="collections-container">
-                {collections.initalCollections.map((collection) => (
-                    <Collections key={collection.setId} {...collection} />
+                {collections.initalCollections.map((collection, index) => (
+                    <Collections
+                      key={collection.setId}
+                      {...collection}
+                      isSelectedCollection={index === selectedCollectionIndex} 
+                      selectedTileIndex={selectedTileIndex}
+                    />
                 ))}
-                {loadedRefIdCollections.map((collection) => (
-                    <Collections key={collection.refId} {...collection} />
+                {loadedRefIdCollections.map((collection, index) => (
+                    <Collections key={collection.refId} {...collection} isSelectedCollection={index+collections.initalCollections.length === selectedCollectionIndex} />
                 ))}
             </div>
         </div>

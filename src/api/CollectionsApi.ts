@@ -84,7 +84,6 @@ export const getCollectionItems = async (refId: string) => {
     try {
         const response = await fetch(`https://cd-static.bamgrid.com/dp-117731241344/sets/${refId}.json`);
         const data = await response.json();
-        console.log(data);
         return data;
     } catch (error) {
         console.error('Error fetching collection items:', error);
