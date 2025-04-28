@@ -5,6 +5,7 @@ export interface CollectionsResponse {
 
 export interface Collection {
     refId: string | null;
+    refType: string | null;
     title: string;
     items: CollectionItem[] | null;
     setId: string | null;
@@ -56,6 +57,7 @@ export const getAllCollections = async () : Promise<CollectionsResponse> => {
             if(!set?.refId) {
                 initalCollections.push({
                     refId: null,
+                    refType: null,
                     title,
                     items: await sanitizeCollectionItem(set?.items),
                     setId: set?.setId || null,
@@ -63,6 +65,7 @@ export const getAllCollections = async () : Promise<CollectionsResponse> => {
             } else {
                 refIdCollections.push({
                     refId: set?.refId || null,
+                    refType: set?.refType || null,
                     title,
                     items: null,
                     setId: null,

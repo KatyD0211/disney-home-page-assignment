@@ -6,53 +6,103 @@ import { Collections } from '../../components/collections/collections';
 export const Home = () => {
     const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
     const [loadedRefIdCollections, setLoadedRefIdCollections] = useState<Collection[]>([]);
+    const [selectedCollectionIndex, setSelectedCollectionIndex] = useState(0);
+    const [selectedTileIndex, setSelectedTileIndex] = useState(0);
+    
+    // Create ref to access DOM element
+    const selectedCollectionRef = useRef<HTMLDivElement>(null);
+    // Access the current DOM element using .current
+    // selectedCollectionRef.current?.scrollIntoView()
+    
+    const [loadMoreCollection, setLoadMoreCollection] = useState(false);
+    const [finishedLoading, setFinishedLoading] = useState(false);
+    const [refIdCollectionsIndex, setRefIdCollectionsIndex] = useState(0);
+    
+
+
     // Load the initial collections
     useEffect(() => {
         const fetchData = async () => {
             const data = await getAllCollections();
             setCollections(data);
+            setFinishedLoading(true);
         }
         fetchData();
     }, []);
+    
     // Load the first refId collection
     useEffect(() => {
-        if(collections.refIdCollections.length > 0 && collections.refIdCollections[0]?.refId) {
+        if(loadMoreCollection && refIdCollectionsIndex < collections.refIdCollections.length) {
             const fetchRefIdCollections = async () => {
-                const refId = collections.refIdCollections[0].refId;
+                const refId = collections.refIdCollections[refIdCollectionsIndex].refId;
+                const refType = collections.refIdCollections[refIdCollectionsIndex].refType;
                 const data = await getCollectionItems(refId!);
-                const items = await sanitizeCollectionItem(data?.data?.CuratedSet?.items || []);
+                const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
                 
                 const newCollection: Collection = {
                     refId: refId,
-                    title: collections.refIdCollections[0].title,
+                    refType: collections.refIdCollections[refIdCollectionsIndex].refType,
+                    title: collections.refIdCollections[refIdCollectionsIndex].title,
                     items: items,
-                    setId: collections.refIdCollections[0].setId
+                    setId: collections.refIdCollections[refIdCollectionsIndex].setId
                 };
 
                 setLoadedRefIdCollections(prevCollections => [...prevCollections, newCollection]);
+                setLoadMoreCollection(false);
             };
             fetchRefIdCollections();
         }
-    }, [collections.refIdCollections]);
+    }, [collections.refIdCollections, loadMoreCollection]);
+
+    // Scroll to selected collection
+    useEffect(() => {
+        if (selectedCollectionRef.current ) {
+            selectedCollectionRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+            const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
+
+            if(selectedCollectionIndex === totalCollections - 1) {
+                setLoadMoreCollection(true);
+                if(loadedRefIdCollections.length > 0) {
+                    setRefIdCollectionsIndex(prevIndex => prevIndex + 1);
+                }
+            }
+        }
+    }, [selectedCollectionIndex]);
+
     // Handle keyboard navigation
-    const [selectedCollectionIndex, setSelectedCollectionIndex] = useState(0);
-    const [selectedTileIndex, setSelectedTileIndex] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
-    
     const handleKeyBoardNavigation = (event: KeyboardEvent) => {
-        console.log(event.key);
+        const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
+        const currentCollection = selectedCollectionIndex < collections.initalCollections.length 
+            ? collections.initalCollections[selectedCollectionIndex]
+            : loadedRefIdCollections[selectedCollectionIndex - collections.initalCollections.length];
+        const maxTiles = currentCollection?.items?.length || 0;
+
         switch (event.key) {
             case 'ArrowRight':
-                setSelectedTileIndex(selectedTileIndex + 1);
+                if (selectedTileIndex < maxTiles - 1) {
+                    setSelectedTileIndex(prev => prev + 1);
+                }
                 break;
             case 'ArrowLeft':
-                setSelectedTileIndex(selectedTileIndex - 1);
+                if (selectedTileIndex > 0) {
+                    setSelectedTileIndex(prev => prev - 1);
+                }
                 break;
             case 'ArrowUp':
-                setSelectedCollectionIndex(selectedCollectionIndex - 1);
+                if (selectedCollectionIndex > 0) {
+                    setSelectedCollectionIndex(prev => prev - 1);
+                    setSelectedTileIndex(0);
+                }
                 break;
             case 'ArrowDown':
-                setSelectedCollectionIndex(selectedCollectionIndex + 1);
+                if (selectedCollectionIndex < totalCollections - 1) {
+                    setSelectedCollectionIndex(prev => prev + 1);
+                    setSelectedTileIndex(0);
+                }
                 break;
             case 'Enter':
                 console.log('Enter');
@@ -66,9 +116,7 @@ export const Home = () => {
             handleKeyBoardNavigation(e);
         }
         window.addEventListener('keydown', handleKeyDown);
-        console.log(selectedTileIndex);
-        console.log(selectedCollectionIndex);
-        console.log(containerRef);
+
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
@@ -88,15 +136,28 @@ export const Home = () => {
             </nav>
             <div className="collections-container">
                 {collections.initalCollections.map((collection, index) => (
-                    <Collections
-                      key={collection.setId}
-                      {...collection}
-                      isSelectedCollection={index === selectedCollectionIndex} 
-                      selectedTileIndex={selectedTileIndex}
-                    />
+                    <div 
+                        key={collection.setId}
+                        ref={index === selectedCollectionIndex ? selectedCollectionRef : null}
+                    >
+                        <Collections
+                            {...collection}
+                            isSelectedCollection={index === selectedCollectionIndex} 
+                            selectedTileIndex={selectedTileIndex}
+                        />
+                    </div>
                 ))}
                 {loadedRefIdCollections.map((collection, index) => (
-                    <Collections key={collection.refId} {...collection} isSelectedCollection={index+collections.initalCollections.length === selectedCollectionIndex} />
+                    <div 
+                        key={collection.refId}
+                        ref={index + collections.initalCollections.length === selectedCollectionIndex ? selectedCollectionRef : null}
+                    >
+                        <Collections 
+                            {...collection} 
+                            isSelectedCollection={index + collections.initalCollections.length === selectedCollectionIndex} 
+                            selectedTileIndex={selectedTileIndex}
+                        />
+                    </div>
                 ))}
             </div>
         </div>

@@ -1,20 +1,20 @@
 .collection {
     margin-bottom: 2rem;
-
+    width: 100%;
 }
-
 
 .collection-title {
     color: #fff;
     margin-bottom: 1rem;
     font-size: 1.5rem;
     font-weight: 600;
+    padding-left: 1rem;
 }
 
 .collection-items {
     display: flex;
     gap: 1rem;
-    padding-bottom: 1rem;
+    padding: 0 1rem;
     overflow-x: auto;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
@@ -33,6 +33,12 @@
     flex: 0 0 auto;
 }
 
+.tile-container {
+    flex: 0 0 auto;
+    min-width: 200px;
+    max-width: 300px;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .collection {
@@ -45,6 +51,11 @@
     
     .collection-items {
         gap: 0.75rem;
+    }
+
+    .tile-container {
+        min-width: 150px;
+        max-width: 200px;
     }
 }
 
@@ -59,5 +70,10 @@
     
     .collection-items {
         gap: 0.5rem;
+    }
+
+    .tile-container {
+        min-width: 120px;
+        max-width: 150px;
     }
 }
