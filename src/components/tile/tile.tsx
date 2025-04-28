@@ -16,7 +16,7 @@ export const Tile = (item: CollectionItem & { isSelectedTile?: boolean, isSelect
     }, []);
 
     return (
-        <div className="tile" style={{border: item.isSelectedTile && item.isSelectedCollection ? '2px solid #fff' : 'none'}}>
+        <div className={`tile ${item.isSelectedTile && item.isSelectedCollection ? 'selected' : ''}`}>
             <div className={`tile-image-container ${!item.imageUrl ? 'no-image' : ''} ${showContent ? 'visible' : ''}`}>
                 {isImageValid ? (
                     <img 
@@ -33,6 +33,9 @@ export const Tile = (item: CollectionItem & { isSelectedTile?: boolean, isSelect
                         </span>
                     </div>
                 )}
+            </div>
+            <div className="tile-release-year">
+                {item.releases?.[0]?.releaseYear}
             </div>
         </div>
     );

@@ -6,12 +6,15 @@
     max-width: 300px;
     position: relative;
     cursor: pointer;
+    border-radius: 4px;
 }
 
 .tile.selected {
     border: 2px solid #fff;
     box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5);
     z-index: 100;
+    transform: scale(1.05);
+    border-radius: 4px;
 }
 
 .tile-image-container {
@@ -92,6 +95,28 @@
     transition: color 0.2s ease-in-out;
     padding: 0 4px;
     word-break: break-word;
+}
+
+.tile-release-year {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(139, 130, 130, 0.436);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    width: 90%;
+}
+
+.tile.selected .tile-release-year {
+    opacity: 1;
+    background-color: rgba(83, 80, 80, 0.9);
+    font-size: 14px;
 }
 
 /* Responsive styles */

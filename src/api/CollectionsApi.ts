@@ -14,7 +14,11 @@ export interface Collection {
 export interface CollectionItem {
     id: string;
     title: string;
-    description: string | null;
+    releases: {
+        releaseYear: string,
+        releaseType: string,
+        releaseDate: string,
+    }[];
     imageUrl: string | null;
 }
 
@@ -38,7 +42,7 @@ export const sanitizeCollectionItem = async (items: any[]): Promise<CollectionIt
         return ({
             id: item?.contentId || item?.collectionId || "",
             title,
-            description: null,
+            releases: item?.releases,
             imageUrl,
         })})
     )

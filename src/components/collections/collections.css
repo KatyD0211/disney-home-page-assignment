@@ -1,12 +1,11 @@
 .collection {
-    margin-bottom: 2rem;
     width: 100%;
 }
 
 .collection-title {
     color: #fff;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+    /* margin-bottom: 1rem; */
+    font-size: 1rem;
     font-weight: 600;
     padding-left: 1rem;
 }
@@ -14,7 +13,7 @@
 .collection-items {
     display: flex;
     gap: 1rem;
-    padding: 0 1rem;
+    padding: 1rem 1rem;
     overflow-x: auto;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
