@@ -1,23 +1,49 @@
-# Getting Started with Create React App
+# Disney+ Home Page Assignment
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a Disney+ Home Page Clone built using React.
+It fetches dynamic collections of movies and shows from a public Disney content API and displays them in a modern, scrollable layout.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+React (Hooks, Functional Components)
 
-### `npm start`
+TypeScript (strong typing)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Fetch API (async data fetching)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+CSS (flexbox, grid)
 
-### `npm test`
+### Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Fetches collections dynamically from Disney's static JSON API.
+
+Divides collections into two types:
+
+Initial collections (with ready items)
+
+RefId collections (need to fetch separately)
+
+Lazy loads collections as the user scrolls 80% down the page.
+
+Graceful handling of broken images (fallback image when 404).
+
+Error handling for network failures.
+
+Clean, modular, readable code structure.
+
+### How to Run Locally
+# 1. Clone the repo
+git clone https://github.com/KatyD0211/disney-home-page-assignment.git
+
+# 2. Navigate into the project
+cd disney-home-page-assignment
+
+# 3. Install dependencies
+npm install
+
+# 4. Start the development server
+npm run dev
+
 
 ### `npm run build`
 
