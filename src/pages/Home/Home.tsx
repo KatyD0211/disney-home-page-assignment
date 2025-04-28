@@ -93,15 +93,19 @@ export const Home = () => {
                 }
                 break;
             case 'ArrowUp':
-                if (selectedCollectionIndex > 0) {
-                    setSelectedCollectionIndex(prev => prev - 1);
-                    setSelectedTileIndex(0);
+                if (selectedCollectionIndex > 0) {                    
+                    setTimeout(() => {
+                        setSelectedCollectionIndex(prev => prev - 1);
+                        setSelectedTileIndex(0);
+                    }, 100);
                 }
                 break;
             case 'ArrowDown':
                 if (selectedCollectionIndex < totalCollections - 1) {
-                    setSelectedCollectionIndex(prev => prev + 1);
-                    setSelectedTileIndex(0);
+                    setTimeout(() => {
+                        setSelectedCollectionIndex(prev => prev + 1);
+                        setSelectedTileIndex(0);
+                    }, 100);
                 }
                 break;
             case 'Enter':
