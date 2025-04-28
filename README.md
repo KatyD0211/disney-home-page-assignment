@@ -32,17 +32,17 @@ Error handling for network failures.
 Clean, modular, readable code structure.
 
 ### How to Run Locally
-# 1. Clone the repo
+#### 1. Clone the repo
 git clone https://github.com/KatyD0211/disney-home-page-assignment.git
 
-# 2. Navigate into the project
+#### 2. Navigate into the project
 cd disney-home-page-assignment
 
-# 3. Install dependencies
+#### 3. Install dependencies
 npm install
 
-# 4. Start the development server
-npm run dev
+#### 4. Start the development server
+npm start
 
 
 ### `npm run build`
