@@ -18,7 +18,7 @@ export interface CollectionItem {
 }
 
 
-const sanitizeCollectionItem = async (items: any[]): Promise<CollectionItem[]> => {
+export const sanitizeCollectionItem = async (items: any[]): Promise<CollectionItem[]> => {
     if(!items) return [];
     return Promise.all(items.map(async (item: any): Promise<CollectionItem> => {
         const profixTitle = item?.text?.title?.full;
@@ -84,6 +84,7 @@ export const getCollectionItems = async (refId: string) => {
     try {
         const response = await fetch(`https://cd-static.bamgrid.com/dp-117731241344/sets/${refId}.json`);
         const data = await response.json();
+        console.log(data);
         return data;
     } catch (error) {
         console.error('Error fetching collection items:', error);
