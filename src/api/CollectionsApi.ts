@@ -14,12 +14,13 @@ export interface CollectionItem {
     id: string;
     title: string;
     description: string | null;
-    imageUrl: string;
+    imageUrl: string | null;
 }
 
-const sanitizeCollectionItem = (items: any[]): CollectionItem[] => {
+
+const sanitizeCollectionItem = async (items: any[]): Promise<CollectionItem[]> => {
     if(!items) return [];
-    return (items.map((item: any): CollectionItem => {
+    return Promise.all(items.map(async (item: any): Promise<CollectionItem> => {
         const profixTitle = item?.text?.title?.full;
         const title = (
             profixTitle.series?.default?.content 
@@ -32,6 +33,7 @@ const sanitizeCollectionItem = (items: any[]): CollectionItem[] => {
             || profixImageUrl?.program?.default?.url
             || profixImageUrl?.default?.default?.url
         )
+
         return ({
             id: item?.contentId || item?.collectionId || "",
             title,
@@ -48,14 +50,14 @@ export const getAllCollections = async () : Promise<CollectionsResponse> => {
         const containers = data.data?.StandardCollection?.containers || [];
         const initalCollections: Collection[] = [];
         const refIdCollections: Collection[] = [];
-        containers.forEach((collection: any) => {
+        for(const collection of containers){
             const set = collection?.set;
             const title = set?.text?.title?.full?.set?.default?.content;
             if(!set?.refId) {
                 initalCollections.push({
                     refId: null,
                     title,
-                    items: sanitizeCollectionItem(set?.items),
+                    items: await sanitizeCollectionItem(set?.items),
                     setId: set?.setId || null,
                 })
             } else {
@@ -67,7 +69,7 @@ export const getAllCollections = async () : Promise<CollectionsResponse> => {
                 })
             }
 
-            })
+            }
         return {
             initalCollections,
             refIdCollections,

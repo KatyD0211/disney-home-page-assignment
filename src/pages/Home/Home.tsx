@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './Home.css';
-import { Collection, CollectionsResponse, getAllCollections } from '../../api/Collections';
+import { CollectionsResponse, getAllCollections } from '../../api/CollectionsApi';
+import { Collections } from '../../components/collections/collections'; 
 
 
 export const Home = () => {
-    // const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
-    const [intialLoadedCollections, setIntialLoadedCollections] = useState<Collection[]>([]);
-    const [refIdLoadedCollections, setRefIdLoadedCollections] = useState<Collection[]>([]);
+    const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
     useEffect(() => {
        const fetchData = async () => {
        const data = await getAllCollections();
-            setIntialLoadedCollections(data.initalCollections);
-            setRefIdLoadedCollections(data.refIdCollections);
-            console.log(data.initalCollections);
-            console.log(data.refIdCollections);
-        }
-        fetchData();
+            setCollections(data);
+       }
+       fetchData();
     }, []);
+
     return (
         <div className="home">
             <nav className="navbar">
@@ -27,7 +24,12 @@ export const Home = () => {
                     />
                 </div>
             </nav>
-
+            <div className="collections-container"> 
+                {collections.initalCollections.map((collection) => (
+                    <Collections key={collection.setId} {...collection} />
+                ))}
+            </div>
         </div>
     )
+
 }
