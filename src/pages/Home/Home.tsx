@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
 import { Collection, CollectionsResponse, getAllCollections, getCollectionItems, sanitizeCollectionItem } from '../../api/CollectionsApi';
 import { Collections } from '../../components/collections/collections'; 
+import { fetchWithRetry } from '../../utils/exponentialBackoff';
 
 export const Home = () => {
     const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
@@ -29,13 +30,14 @@ export const Home = () => {
     // Load the refId collection based on the refIdCollectionsIndex and loadMoreCollection
     useEffect(() => {
         if(loadMoreCollection && refIdCollectionsIndex < collections.refIdCollections.length) {
+            let isMounted = true;
             const fetchRefIdCollections = async () => {
                 const refId = collections.refIdCollections[refIdCollectionsIndex].refId;
                 const refType = collections.refIdCollections[refIdCollectionsIndex].refType;
                 try {
-                    const data = await getCollectionItems(refId!);
+                    const data = await fetchWithRetry(()=>getCollectionItems(refId!));
                     const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
-                    
+                    if(!isMounted) return
                     const newCollection: Collection = {
                         refId: refId,
                         refType: collections.refIdCollections[refIdCollectionsIndex].refType,
@@ -49,12 +51,14 @@ export const Home = () => {
 
                 }catch(error) {
                     console.error('Error fetching ref collections:', error);
-                    throw error; 
+                    // add some UI for the error                    
                 }
                 
             };
             fetchRefIdCollections();
+            return () => { isMounted = false; };
         }
+        return; 
     }, [collections.refIdCollections, loadMoreCollection]);
 
     // Scroll to selected collection
