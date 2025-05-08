@@ -1,29 +1,33 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './Home.css';
 import { Collection, CollectionsResponse, getAllCollections, getCollectionItems, sanitizeCollectionItem } from '../../api/CollectionsApi';
-import { Collections } from '../../components/collections/collections'; 
-import { useFetchWithRetry } from '../../utils/exponentialBackoff';
+import { FetchWithRetry } from '../../utils/exponentialBackoff';
 import { useDebouncer } from '../../utils/useDebouncer';
+import { Collections } from '../../components/collections/Collections';
+import { LoadingSkeleton } from '../../components/loadingSkeleton/LoadingSkeleton';
 
 export const Home = () => {
     const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
     const [loadedRefIdCollections, setLoadedRefIdCollections] = useState<Collection[]>([]);
-    const [selectedCollectionIndex, setSelectedCollectionIndex] = useState(0);
-    const [selectedTileIndex, setSelectedTileIndex] = useState(0);
+    const [selectedCollectionIndex, setSelectedCollectionIndex] = useState<number>(0);
+    const [selectedTileIndex, setSelectedTileIndex] = useState<number>(0);
     
     // Create ref to access DOM element
     const selectedCollectionRef = useRef<HTMLDivElement>(null);
+    const loadingSkeletonRef = useRef<HTMLDivElement>(null);
 
-    const [loadMoreCollection, setLoadMoreCollection] = useState(false);
-    const [refIdCollectionsIndex, setRefIdCollectionsIndex] = useState(0);
+    const [loadMoreCollection, setLoadMoreCollection] = useState<boolean>(false);
+    const [refIdCollectionsIndex, setRefIdCollectionsIndex] = useState<number>(0);
+
+    const [showLoadingSkeleton, setShowLoadingSkeleton] = useState<boolean>(false) 
     
-    const [isMagicActive, setIsMagicActive] = useState(false);
+    const [isMagicActive, setIsMagicActive] = useState<boolean>(false);
 
     // Load the initial collections
     useEffect(() => {
         const fetchData = async () => {
             try{
-                const data = await useFetchWithRetry(()=>getAllCollections());
+                const data = await FetchWithRetry(()=>getAllCollections());
                 setCollections(data);
             } catch (error) {
                 console.log('Error fetching  collections:', error);
@@ -38,12 +42,12 @@ export const Home = () => {
     useEffect(() => {
         let isMounted = true;
         if(loadMoreCollection && refIdCollectionsIndex < collections.refIdCollections.length) {
-    
+            setShowLoadingSkeleton(true);
             const fetchRefIdCollections = async () => {
                 const refId = collections.refIdCollections[refIdCollectionsIndex].refId;
                 const refType = collections.refIdCollections[refIdCollectionsIndex].refType;
                 try {
-                    const data = await useFetchWithRetry(()=>getCollectionItems(refId!));
+                    const data = await FetchWithRetry(()=>getCollectionItems(refId!));
                     const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
                     if(!isMounted) return
                     const newCollection: Collection = {
@@ -53,6 +57,7 @@ export const Home = () => {
                         items: items,
                         setId: collections.refIdCollections[refIdCollectionsIndex].setId
                     };
+                    setShowLoadingSkeleton(false);
                     setLoadedRefIdCollections(prevCollections => [...prevCollections, newCollection]);
                     setRefIdCollectionsIndex(prevIndex => prevIndex + 1);
                     setLoadMoreCollection(false);
@@ -63,18 +68,18 @@ export const Home = () => {
                 }
                 
             };
-            fetchRefIdCollections();
+            setTimeout(()=>fetchRefIdCollections(),1000);
         }
         return () => { isMounted = false; };
     }, [collections.refIdCollections, loadMoreCollection, refIdCollectionsIndex]);
 
-    // Scroll to selected collection
+    // Scroll to selected collection 
     useEffect(() => {
         if (selectedCollectionRef.current ) {
             selectedCollectionRef.current.scrollIntoView({
                 behavior: 'smooth',
-                block: 'center',
-                inline: "nearest"
+                block: 'nearest',
+                inline: "center"
             });
             const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
 
@@ -83,6 +88,16 @@ export const Home = () => {
             }
         }
     }, [selectedCollectionIndex]);
+
+    useEffect (()=>{
+        if (showLoadingSkeleton && loadingSkeletonRef.current){
+                loadingSkeletonRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: "center"
+                })
+            }
+    },[showLoadingSkeleton]);
 
     // Handle keyboard navigation
     const handleKeyBoardNavigation = useCallback((event: KeyboardEvent) => {
@@ -135,7 +150,7 @@ export const Home = () => {
         selectedCollectionIndex,
     ]);
     // adding  debounce for all key board navigation
-    const debounceKeyBoardNavigation = useDebouncer(handleKeyBoardNavigation, 100)
+    const debounceKeyBoardNavigation = useDebouncer(handleKeyBoardNavigation, 200)
     
     useEffect(()=>{
         const onKeyPress = (event: KeyboardEvent) => {
@@ -194,6 +209,11 @@ export const Home = () => {
                         />
                     </div>
                 ))}
+                {showLoadingSkeleton && (
+                    <div ref={loadingSkeletonRef}> 
+                        <LoadingSkeleton />
+                    </div> 
+                )}
             </div>
         </div>
     )
