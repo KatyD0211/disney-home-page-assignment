@@ -44,6 +44,7 @@ export const Home = () => {
                         setId: collections.refIdCollections[refIdCollectionsIndex].setId
                     };
                     setLoadedRefIdCollections(prevCollections => [...prevCollections, newCollection]);
+                    setRefIdCollectionsIndex(prevIndex => prevIndex + 1);
                     setLoadMoreCollection(false);
 
                 }catch(error) {
@@ -61,16 +62,13 @@ export const Home = () => {
         if (selectedCollectionRef.current ) {
             selectedCollectionRef.current.scrollIntoView({
                 behavior: 'smooth',
-                block: 'nearest',
-                inline: 'center'
+                block: 'end',
+                inline: "nearest"
             });
             const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
 
             if(selectedCollectionIndex === totalCollections - 1) {
                 setLoadMoreCollection(true);
-                if(loadedRefIdCollections.length > 0) {
-                    setRefIdCollectionsIndex(prevIndex => prevIndex + 1);
-                }
             }
         }
     }, [selectedCollectionIndex]);
