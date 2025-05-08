@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './Home.css';
 import { Collection, CollectionsResponse, getAllCollections, getCollectionItems, sanitizeCollectionItem } from '../../api/CollectionsApi';
 import { Collections } from '../../components/collections/collections'; 
-import { fetchWithRetry } from '../../utils/exponentialBackoff';
+import { useFetchWithRetry } from '../../utils/exponentialBackoff';
+import { useDebouncer } from '../../utils/useDebouncer';
 
 export const Home = () => {
     const [collections, setCollections] = useState<CollectionsResponse>({initalCollections: [], refIdCollections: []});
@@ -21,21 +22,28 @@ export const Home = () => {
     // Load the initial collections
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getAllCollections();
-            setCollections(data);
+            try{
+                const data = await useFetchWithRetry(()=>getAllCollections());
+                setCollections(data);
+            } catch (error) {
+                console.log('Error fetching  collections:', error);
+            }
+
         }
         fetchData();
     }, []);
     
     // Load the refId collection based on the refIdCollectionsIndex and loadMoreCollection
+    // added exponential backoff for retry 
     useEffect(() => {
+        let isMounted = true;
         if(loadMoreCollection && refIdCollectionsIndex < collections.refIdCollections.length) {
-            let isMounted = true;
+    
             const fetchRefIdCollections = async () => {
                 const refId = collections.refIdCollections[refIdCollectionsIndex].refId;
                 const refType = collections.refIdCollections[refIdCollectionsIndex].refType;
                 try {
-                    const data = await fetchWithRetry(()=>getCollectionItems(refId!));
+                    const data = await useFetchWithRetry(()=>getCollectionItems(refId!));
                     const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
                     if(!isMounted) return
                     const newCollection: Collection = {
@@ -56,33 +64,34 @@ export const Home = () => {
                 
             };
             fetchRefIdCollections();
-            return () => { isMounted = false; };
         }
-        return; 
-    }, [collections.refIdCollections, loadMoreCollection]);
+        return () => { isMounted = false; };
+    }, [collections.refIdCollections, loadMoreCollection, refIdCollectionsIndex]);
 
     // Scroll to selected collection
     useEffect(() => {
         if (selectedCollectionRef.current ) {
             selectedCollectionRef.current.scrollIntoView({
                 behavior: 'smooth',
-                block: 'end',
+                block: 'center',
                 inline: "nearest"
             });
             const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
 
             if(selectedCollectionIndex === totalCollections - 1) {
-                setLoadMoreCollection(true);
+                setLoadMoreCollection(true)
             }
         }
     }, [selectedCollectionIndex]);
 
     // Handle keyboard navigation
-    const handleKeyBoardNavigation = (event: KeyboardEvent) => {
+    const handleKeyBoardNavigation = useCallback((event: KeyboardEvent) => {
         const totalCollections = collections.initalCollections.length + loadedRefIdCollections.length;
+
         const currentCollection = selectedCollectionIndex < collections.initalCollections.length 
             ? collections.initalCollections[selectedCollectionIndex]
             : loadedRefIdCollections[selectedCollectionIndex - collections.initalCollections.length];
+
         const maxTiles = currentCollection?.items?.length || 0;
 
         switch (event.key) {
@@ -119,18 +128,25 @@ export const Home = () => {
             default:
                 break;
         }
-    }
+    },[
+        collections.initalCollections,
+        loadedRefIdCollections,
+        selectedTileIndex,
+        selectedCollectionIndex,
+    ]);
+    // adding  debounce for all key board navigation
+    const debounceKeyBoardNavigation = useDebouncer(handleKeyBoardNavigation, 100)
+    
     useEffect(()=>{
-        const handleKeyDown = (e: KeyboardEvent) => {
-            handleKeyBoardNavigation(e);
+        const onKeyPress = (event: KeyboardEvent) => {
+            debounceKeyBoardNavigation(event);
         }
-        window.addEventListener('keydown', handleKeyDown);
-
+        window.addEventListener('keydown', onKeyPress);
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keydown', onKeyPress);
         }
-    }, [handleKeyBoardNavigation]);
+    }, [debounceKeyBoardNavigation]);
 
 
     return (
