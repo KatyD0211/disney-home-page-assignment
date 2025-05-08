@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { CollectionItem } from '../../api/CollectionsApi';
-import './tile.css';
+import './Tile.css';
 
 export const Tile = (item: CollectionItem & { isSelectedTile?: boolean, isSelectedCollection?: boolean }) => {
     const [isImageValid, setIsImageValid] = useState(true);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [showContent, setShowContent] = useState(false);
-    // console.log('====tile')
+
     useEffect(() => {
         // Small delay to ensure smooth transition
         const timer = setTimeout(() => {

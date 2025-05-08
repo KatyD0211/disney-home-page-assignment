@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Collection } from "../../api/CollectionsApi";
-import { Tile } from "../tile/tile";
-import "./collections.css";
+import { Tile } from "../tile/Tile";
+import "./Collections.css";
 
 export const Collections = ({ 
     title,

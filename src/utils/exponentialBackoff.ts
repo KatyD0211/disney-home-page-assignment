@@ -10,7 +10,7 @@
 
 
 
-export const useFetchWithRetry = async (
+export const FetchWithRetry = async (
     fn: () => Promise<any>,
     retries: number =5,
     delayMs: number =500, 
@@ -24,7 +24,7 @@ export const useFetchWithRetry = async (
           // next attempt
           await new Promise(resolve => setTimeout(resolve, delayMs));
           // retry with one fewer attempt, and increased delay
-          return useFetchWithRetry(fn, retries - 1, delayMs * backoffFactor, backoffFactor);
+          return FetchWithRetry(fn, retries - 1, delayMs * backoffFactor, backoffFactor);
         }
         // out of retries time and throw error
         throw error;
