@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    max-width: 300px;
+    /* max-width: 300px; */
     position: relative;
     cursor: pointer;
     border-radius: 4px;
@@ -20,12 +20,14 @@
 .tile-image-container {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    /* padding-bottom: 56.25%;  */
+    /* 16:9 aspect ratio */
     overflow: hidden;
     border-radius: 4px;
     opacity: 0;
     transform: translateX(10px);
     transition: opacity 1s ease-out, transform 1s ease-out;
+    aspect-ratio: 16/9;
 }
 
 .tile-image-container.visible {

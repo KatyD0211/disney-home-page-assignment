@@ -15,7 +15,7 @@ export const Collections = ({
             selectedTileRef.current.scrollIntoView({
                  behavior: 'smooth',
                  block: 'nearest',
-                 inline: 'center'
+                 inline: 'end'
                 });
         }
     }, [ isSelectedCollection, selectedTileIndex]);

@@ -36,5 +36,52 @@
     position: relative;
     top: 400px;
 }
+.collection-skeleton {
+    padding: 1rem;
+  }
+  
+  .skeleton-title {
+    width: 200px;
+    height: 30px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    background: #ddd;
+  }
+  
+  .skeleton-items {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .skeleton-tile {
+    width: 200px;
+    height: 120px;
+    border-radius: 6px;
+    background: #8d8585;
+    /* justify-content: center; */
+    align-content: center;
+
+  }
+  
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      #847777 0%,
+      #4a4141 50%,
+      #2c2727 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
 
 

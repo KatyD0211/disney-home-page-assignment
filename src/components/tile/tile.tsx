@@ -6,7 +6,7 @@ export const Tile = (item: CollectionItem & { isSelectedTile?: boolean, isSelect
     const [isImageValid, setIsImageValid] = useState(true);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [showContent, setShowContent] = useState(false);
-
+    // console.log('====tile')
     useEffect(() => {
         // Small delay to ensure smooth transition
         const timer = setTimeout(() => {

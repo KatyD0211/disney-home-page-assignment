@@ -32,19 +32,25 @@ export const Home = () => {
             const fetchRefIdCollections = async () => {
                 const refId = collections.refIdCollections[refIdCollectionsIndex].refId;
                 const refType = collections.refIdCollections[refIdCollectionsIndex].refType;
-                const data = await getCollectionItems(refId!);
-                const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
-                
-                const newCollection: Collection = {
-                    refId: refId,
-                    refType: collections.refIdCollections[refIdCollectionsIndex].refType,
-                    title: collections.refIdCollections[refIdCollectionsIndex].title,
-                    items: items,
-                    setId: collections.refIdCollections[refIdCollectionsIndex].setId
-                };
+                try {
+                    const data = await getCollectionItems(refId!);
+                    const items = await sanitizeCollectionItem(data?.data?.[refType as keyof typeof data.data]?.items || data?.data?.CuratedSet?.items);
+                    
+                    const newCollection: Collection = {
+                        refId: refId,
+                        refType: collections.refIdCollections[refIdCollectionsIndex].refType,
+                        title: collections.refIdCollections[refIdCollectionsIndex].title,
+                        items: items,
+                        setId: collections.refIdCollections[refIdCollectionsIndex].setId
+                    };
+                    setLoadedRefIdCollections(prevCollections => [...prevCollections, newCollection]);
+                    setLoadMoreCollection(false);
 
-                setLoadedRefIdCollections(prevCollections => [...prevCollections, newCollection]);
-                setLoadMoreCollection(false);
+                }catch(error) {
+                    console.error('Error fetching ref collections:', error);
+                    throw error; 
+                }
+                
             };
             fetchRefIdCollections();
         }
